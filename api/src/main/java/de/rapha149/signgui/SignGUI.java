@@ -140,7 +140,7 @@ public class SignGUI {
 
                     if (actions == null || actions.isEmpty()) {
                         if (FOLIA) {
-                            Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> close.run());
+                            Bukkit.getRegionScheduler().run(plugin, signEditor.getLocation(), __ -> close.run());
                         } else {
                             Bukkit.getScheduler().runTask(plugin, close);
                         }
@@ -157,7 +157,7 @@ public class SignGUI {
                             SignGUIActionInfo otherInfo = otherAction.getInfo();
                             if (info.isConflicting(otherInfo)) {
                                 if (FOLIA) {
-                                    Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> close.run());
+                                    Bukkit.getRegionScheduler().run(plugin, signEditor.getLocation(), __ -> close.run());
                                 } else {
                                     Bukkit.getScheduler().runTask(plugin, close);
                                 }
@@ -171,7 +171,7 @@ public class SignGUI {
 
                     if (!keepOpen) {
                         if (FOLIA) {
-                            Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> close.run());
+                            Bukkit.getRegionScheduler().run(plugin, signEditor.getLocation(), __ -> close.run());
                         } else {
                             Bukkit.getScheduler().runTask(plugin, close);
                         }
@@ -183,7 +183,7 @@ public class SignGUI {
 
                 if (callHandlerSynchronously) {
                     if (FOLIA) {
-                        Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> runnable.run());
+                        Bukkit.getRegionScheduler().run(plugin, signEditor.getLocation(), __ -> runnable.run());
                     } else {
                         Bukkit.getScheduler().runTask(plugin, runnable);
                     }

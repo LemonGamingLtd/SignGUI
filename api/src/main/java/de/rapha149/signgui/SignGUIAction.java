@@ -1,7 +1,7 @@
 package de.rapha149.signgui;
 
 import de.rapha149.signgui.version.VersionWrapper;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -78,7 +78,11 @@ public interface SignGUIAction {
 
             @Override
             public void execute(SignGUI gui, SignEditor signEditor, Player player) {
-                Bukkit.getScheduler().runTask(plugin, () -> player.openInventory(inventory));
+                if (SignGUI.FOLIA) {
+                    player.getScheduler().run(plugin, __ -> player.openInventory(inventory), () -> {});
+                } else {
+                    Bukkit.getScheduler().runTask(plugin, () -> player.openInventory(inventory));
+                }
             }
         };
     }
@@ -131,7 +135,11 @@ public interface SignGUIAction {
 
             @Override
             public void execute(SignGUI gui, SignEditor signEditor, Player player) {
-                Bukkit.getScheduler().runTask(plugin, runnable);
+                if (SignGUI.FOLIA) {
+                    player.getScheduler().run(plugin, __ -> runnable.run(), () -> {});
+                } else {
+                    Bukkit.getScheduler().runTask(plugin, runnable);
+                }
             }
         };
     }

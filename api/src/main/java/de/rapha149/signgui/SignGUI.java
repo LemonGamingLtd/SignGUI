@@ -2,7 +2,7 @@ package de.rapha149.signgui;
 
 import de.rapha149.signgui.SignGUIAction.SignGUIActionInfo;
 import de.rapha149.signgui.version.VersionWrapper;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -27,10 +27,19 @@ import java.util.stream.Collectors;
  */
 public class SignGUI {
 
+    public static boolean FOLIA;
+
     static final VersionWrapper WRAPPER;
     static final String availableSignTypes;
 
     static {
+        boolean folia = false;
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            folia = true;
+        } catch (ClassNotFoundException ignored) { }
+        FOLIA = folia;
+
         String craftBukkitPackage = Bukkit.getServer().getClass().getPackage().getName();
 
         String version = null;
@@ -158,10 +167,15 @@ public class SignGUI {
                         action.execute(this, signEditor, player);
                 };
 
-                if (callHandlerSynchronously)
-                    Bukkit.getScheduler().runTask(plugin, runnable);
-                else
+                if (callHandlerSynchronously) {
+                    if (FOLIA) {
+                        Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> runnable.run());
+                    } else {
+                        Bukkit.getScheduler().runTask(plugin, runnable);
+                    }
+                } else {
                     runnable.run();
+                }
             });
         } catch (Exception e) {
             throw new SignGUIException("Failed to open sign gui", e);

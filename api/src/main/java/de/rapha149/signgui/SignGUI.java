@@ -139,7 +139,11 @@ public class SignGUI {
                     List<SignGUIAction> actions = handler.onFinish(player, new SignGUIResult(resultLines));
 
                     if (actions == null || actions.isEmpty()) {
-                        close.run();
+                        if (FOLIA) {
+                            Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> close.run());
+                        } else {
+                            Bukkit.getScheduler().runTask(plugin, close);
+                        }
                         return;
                     }
 
@@ -152,7 +156,11 @@ public class SignGUI {
 
                             SignGUIActionInfo otherInfo = otherAction.getInfo();
                             if (info.isConflicting(otherInfo)) {
-                                close.run();
+                                if (FOLIA) {
+                                    Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> close.run());
+                                } else {
+                                    Bukkit.getScheduler().runTask(plugin, close);
+                                }
                                 throw new SignGUIException("The actions " + info.getName() + " and " + otherInfo.getName() + " are conflicting");
                             }
                         }
@@ -161,8 +169,14 @@ public class SignGUI {
                             keepOpen = true;
                     }
 
-                    if (!keepOpen)
-                        close.run();
+                    if (!keepOpen) {
+                        if (FOLIA) {
+                            Bukkit.getRegionScheduler().run(plugin, signLoc, __ -> close.run());
+                        } else {
+                            Bukkit.getScheduler().runTask(plugin, close);
+                        }
+                    }
+
                     for (SignGUIAction action : actions)
                         action.execute(this, signEditor, player);
                 };

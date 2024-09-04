@@ -139,11 +139,7 @@ public class SignGUI {
                     List<SignGUIAction> actions = handler.onFinish(player, new SignGUIResult(resultLines));
 
                     if (actions == null || actions.isEmpty()) {
-                        if (FOLIA) {
-                            Bukkit.getRegionScheduler().run(plugin, signEditor.getLocation(), __ -> close.run());
-                        } else {
-                            Bukkit.getScheduler().runTask(plugin, close);
-                        }
+                        close.run();
                         return;
                     }
 
@@ -156,11 +152,7 @@ public class SignGUI {
 
                             SignGUIActionInfo otherInfo = otherAction.getInfo();
                             if (info.isConflicting(otherInfo)) {
-                                if (FOLIA) {
-                                    Bukkit.getRegionScheduler().run(plugin, signEditor.getLocation(), __ -> close.run());
-                                } else {
-                                    Bukkit.getScheduler().runTask(plugin, close);
-                                }
+                                close.run();
                                 throw new SignGUIException("The actions " + info.getName() + " and " + otherInfo.getName() + " are conflicting");
                             }
                         }
@@ -169,14 +161,8 @@ public class SignGUI {
                             keepOpen = true;
                     }
 
-                    if (!keepOpen) {
-                        if (FOLIA) {
-                            Bukkit.getRegionScheduler().run(plugin, signEditor.getLocation(), __ -> close.run());
-                        } else {
-                            Bukkit.getScheduler().runTask(plugin, close);
-                        }
-                    }
-
+                    if (!keepOpen)
+                        close.run();
                     for (SignGUIAction action : actions)
                         action.execute(this, signEditor, player);
                 };

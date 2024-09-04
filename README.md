@@ -9,7 +9,7 @@ Maven dependency:
 <dependency>
     <groupId>de.rapha149.signgui</groupId>
     <artifactId>signgui</artifactId>
-    <version>2.3.9</version>
+    <version>2.3.10</version>
 </dependency>
 ```
 

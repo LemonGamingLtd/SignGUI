@@ -32,6 +32,21 @@ public class SignGUI {
     static final VersionWrapper WRAPPER;
     static final String availableSignTypes;
 
+    private static boolean useMojangMappings(String version) {
+        try {
+            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+        } catch (ClassNotFoundException ignored) {
+            return false;
+        }
+
+        final String[] versionNumbers = version.replace("R", "").split("_");
+        int major = Integer.parseInt(versionNumbers[1]);
+        int minor = versionNumbers.length > 2 ? Integer.parseInt(versionNumbers[2]) : 0;
+        if (major == 20 && minor == 4)
+            return true; // 1.20.5/6
+        return major > 20; // >= 1.21
+    }
+
     static {
         boolean folia = false;
         try {
@@ -48,6 +63,7 @@ public class SignGUI {
 
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL("https://raw.githubusercontent.com/Rapha149/NMSVersions/main/nms-versions.json").openConnection();
+                conn.setConnectTimeout(10000);
                 conn.setRequestMethod("GET");
                 conn.connect();
 
@@ -78,8 +94,15 @@ public class SignGUI {
             version = craftBukkitPackage.split("\\.")[3].substring(1);
         }
 
+        final String className;
+        if (useMojangMappings(version)) {
+            className = VersionWrapper.class.getPackage().getName() + ".MojangWrapper" + version;
+        } else {
+            className = VersionWrapper.class.getPackage().getName() + ".Wrapper" + version;
+        }
+
         try {
-            WRAPPER = (VersionWrapper) Class.forName(VersionWrapper.class.getPackage().getName() + ".Wrapper" + version).getDeclaredConstructor().newInstance();
+            WRAPPER = (VersionWrapper) Class.forName(className).getDeclaredConstructor().newInstance();
         } catch (IllegalAccessException | InstantiationException | NoSuchMethodException |
                  InvocationTargetException exception) {
             throw new IllegalStateException("Failed to load support for server version " + version, exception);
@@ -100,8 +123,10 @@ public class SignGUI {
     }
 
     private final String[] lines;
+    private final Object[] adventureLines;
     private final Material type;
     private final DyeColor color;
+    private final boolean glow;
     private final Location signLoc;
     private final SignGUIFinishHandler handler;
     private final boolean callHandlerSynchronously;
@@ -110,10 +135,12 @@ public class SignGUI {
     /**
      * Constructs a new SignGUI. Use {@link SignGUI#builder()} to get a new instance.
      */
-    SignGUI(String[] lines, Material type, DyeColor color, Location signLoc, SignGUIFinishHandler handler, boolean callHandlerSynchronously, JavaPlugin plugin) {
+    SignGUI(String[] lines, Object[] adventureLines, Material type, DyeColor color, boolean glow, Location signLoc, SignGUIFinishHandler handler, boolean callHandlerSynchronously, JavaPlugin plugin) {
         this.lines = lines;
+        this.adventureLines = adventureLines;
         this.type = type;
         this.color = color;
+        this.glow = glow;
         this.signLoc = signLoc;
         this.handler = handler;
         this.callHandlerSynchronously = callHandlerSynchronously;
@@ -133,7 +160,7 @@ public class SignGUI {
         Validate.notNull(player, "The player cannot be null");
 
         try {
-            WRAPPER.openSignEditor(player, lines, type, color, signLoc, (signEditor, resultLines) -> {
+            WRAPPER.openSignEditor(player, lines, adventureLines, type, color, glow, signLoc, (signEditor, resultLines) -> {
                 Runnable runnable = () -> {
                     Runnable close = () -> WRAPPER.closeSignEditor(player, signEditor);
                     List<SignGUIAction> actions = handler.onFinish(player, new SignGUIResult(resultLines));
@@ -187,15 +214,18 @@ public class SignGUI {
      * This is called when {@link SignGUIAction#displayNewLines(String...)} is returned as an action after the player has finished editing.
      *
      * @param lines The lines, must be exactly 4.
+     * @param adventureLines The lines using Adventure components (1.20.5+). Must be exactly 4. May be null.
      * @throws java.lang.IllegalArgumentException If lines is null or not exactly 4 lines.
      * @throws SignGUIException                   If an error occurs while setting the lines.
      */
-    void displayNewLines(Player player, SignEditor signEditor, String[] lines) {
+    void displayNewLines(Player player, SignEditor signEditor, String[] lines, Object[] adventureLines) {
         Validate.notNull(lines, "The lines cannot be null");
         Validate.isTrue(lines.length == 4, "The lines must have a length of 4");
+        if (adventureLines != null)
+            Validate.isTrue(adventureLines.length == 4, "The adventure lines must null or have a length of 4");
 
         try {
-            WRAPPER.displayNewLines(player, signEditor, lines);
+            WRAPPER.displayNewLines(player, signEditor, lines, adventureLines);
         } catch (Exception e) {
             throw new SignGUIException("Failed to display new lines", e);
         }

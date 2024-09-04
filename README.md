@@ -1,6 +1,7 @@
 # SignGUI [![Build](https://github.com/Rapha149/SignGUI/actions/workflows/build.yml/badge.svg)](https://github.com/Rapha149/SignGUI/actions/workflows/build.yml) [![Maven Central](https://img.shields.io/maven-central/v/de.rapha149.signgui/signgui?label=Maven%20Central)](https://central.sonatype.com/artifact/de.rapha149.signgui/signgui) [![Javadoc](https://javadoc.io/badge2/de.rapha149.signgui/signgui/Javadoc.svg)](https://javadoc.io/doc/de.rapha149.signgui/signgui) 
 An api to get input text via a sign in Minecraft.  
-The api supports the Minecraft versions from `1.8` to `1.21`.
+The api supports the Minecraft versions from `1.8` to `1.21`.  
+Also supports adventure text and mojang-mapped Paper plugins (1.20.5+).
 
 ## Integration
 
@@ -9,7 +10,7 @@ Maven dependency:
 <dependency>
     <groupId>de.rapha149.signgui</groupId>
     <artifactId>signgui</artifactId>
-    <version>2.3.10</version>
+    <version>2.4.1</version>
 </dependency>
 ```
 
@@ -56,6 +57,7 @@ There are two solution to this problem:
    Wrapper1_20_R4.class.getName()
    ```
    I used the class `Wrapper1_20_R4` in this example which corresponds to the Minecraft version `1.20.5` and `1.20.6`.
+   If you are using a mojang-mapped Paper plugin the class would be `MojangWrapper1_20_R4`.  
    In order to find out which Minecraft version corresponds to which wrapper class you can check out this Github repository of mine: [NMSVersions](https://github.com/Rapha149/NMSVersions?tab=readme-ov-file#versions).  
    ​
 3. Exclude the SignGUI dependency from being affected by the `minimize()` method like this:
@@ -134,6 +136,9 @@ An explanation for the different methods can be found on the [Javadoc](https://j
 
 ## Limitations
 
+### Players can edit pre-written lines
+Due to the nature of sign editing, it is not possible to specify the lines a player can and can't edit. If you set pre-written lines on the sign (e.g. for informing the player what he should write), the player will be able to delete or edit these lines as well. My recommendation is to ignore the pre-written lines when analyzing the player's response so that it doesn't matter if the player alters them and to leave the first line(s) blank for the player to write on so that he doesn't have to select a lower line first.
+
 ### The location of the sign
 Especially in newer versions, I encountered the problem that the sign had to be near the player in order to edit it.  
 In older versions it worked by placing the sign at the bottom of the world but that does not seem to be the case anymore, in my tests anyway.
@@ -150,6 +155,10 @@ Since the sign is not actually placed on the server, it can get overwritten when
 Because of that you may encounter the problem that the sign does not display any text when you send it to the player directly when he joins.  
 But even with a 20 tick (1 second) delay after the PlayerJoinEvent, the sign in my tests was empty sometimes.  
 I would recommend waiting at least a few more seconds before opening the gui.
+
+### Not being able to change the glow status when displaying new lines
+At least to my knowledge it is not possible to change whether the sign's text glows when displaying new lines using the respective SignGUIAction.
+To do this you would need to construct and open a new SignGUI.
 
 ## Credits
 This project's structure was inspired by WesJD's [AnvilGUI](https://github.com/WesJD/AnvilGUI) and I used some code from Cleymax's [SignGUI](https://github.com/Cleymax/SignGUI).

@@ -16,6 +16,7 @@ import net.minecraft.server.network.PlayerConnection;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.world.item.EnumColor;
 import net.minecraft.world.level.World;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.DyeColor;
@@ -61,7 +62,7 @@ public class Wrapper1_21_R1 implements VersionWrapper {
     }
 
     @Override
-    public void openSignEditor(Player player, String[] lines, Material type, DyeColor color, Location signLoc, BiConsumer<SignEditor, String[]> onFinish) throws IllegalAccessException {
+    public void openSignEditor(Player player, String[] lines, Object[] adventureLines, Material type, DyeColor color, boolean glow, Location signLoc, BiConsumer<SignEditor, String[]> onFinish) throws IllegalAccessException {
         EntityPlayer p = ((CraftPlayer) player).getHandle();
         PlayerConnection conn = p.c;
 
@@ -76,9 +77,10 @@ public class Wrapper1_21_R1 implements VersionWrapper {
         Location loc = signLoc != null ? signLoc : getDefaultLocation(player);
         BlockPosition pos = new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 
-        TileEntitySign sign = new TileEntitySign(pos, null);
+        TileEntitySign sign = new TileEntitySign(pos, Blocks.cE.o());
         SignText signText = sign.a(true) // flag = front/back of sign
-                .a(EnumColor.valueOf(color.toString()));
+                .a(EnumColor.valueOf(color.toString()))
+                .a(glow);
         for (int i = 0; i < lines.length; i++)
             signText = signText.a(i, IChatBaseComponent.a(lines[i]));
         sign.a(signText, true);
@@ -140,7 +142,7 @@ public class Wrapper1_21_R1 implements VersionWrapper {
     }
 
     @Override
-    public void displayNewLines(Player player, SignEditor signEditor, String[] lines) {
+    public void displayNewLines(Player player, SignEditor signEditor, String[] lines, Object[] adventureLines) {
         TileEntitySign sign = (TileEntitySign) signEditor.getSign();
 
         SignText newSignText = sign.a(true);

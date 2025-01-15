@@ -25,7 +25,8 @@ public class SignGUI {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             folia = true;
-        } catch (ClassNotFoundException ignored) { }
+        } catch (ClassNotFoundException ignored) {
+        }
         FOLIA = folia;
     }
 

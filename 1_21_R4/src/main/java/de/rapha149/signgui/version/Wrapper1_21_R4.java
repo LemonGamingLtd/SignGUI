@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-public class Wrapper1_21_R3 implements VersionWrapper {
+public class Wrapper1_21_R4 implements VersionWrapper {
 
     private final Field NETWORK_MANAGER_FIELD;
 
@@ -77,7 +77,7 @@ public class Wrapper1_21_R3 implements VersionWrapper {
         Location loc = signLoc != null ? signLoc : getDefaultLocation(player);
         BlockPosition pos = new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 
-        TileEntitySign sign = new TileEntitySign(pos, Blocks.cM.m());
+        TileEntitySign sign = new TileEntitySign(pos, Blocks.cP.m());
         SignText signText = sign.a(true) // flag = front/back of sign
                 .a(EnumColor.valueOf(color.toString()))
                 .a(glow);

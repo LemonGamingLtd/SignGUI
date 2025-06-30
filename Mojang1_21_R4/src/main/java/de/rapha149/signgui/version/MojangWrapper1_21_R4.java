@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-public class MojangWrapper1_21_R3 implements VersionWrapper {
+public class MojangWrapper1_21_R4 implements VersionWrapper {
 
     @Override
     public Material getDefaultType() {
